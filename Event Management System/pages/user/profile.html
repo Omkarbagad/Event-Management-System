@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile - EventEase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --secondary: #a29bfe;
+      --text: #2d3436;
+      --bg: linear-gradient(to right, #dfe6e9, #f5f6fa);
+      --white: #fff;
+      --input-bg: #f0f0f0;
+      --hover: #5b4bcc;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+
+    .main {
+      margin-left: 0;
+      padding: 2rem;
+      transition: margin-left 0.3s ease;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+
+    .profile-section {
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-section h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--primary);
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .profile-info label {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .profile-info input,
+    .profile-info textarea {
+      padding: 0.7rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--input-bg);
+      font-size: 1rem;
+      transition: 0.2s ease;
+    }
+
+    .profile-info input:focus,
+    .profile-info textarea:focus {
+      outline: 2px solid var(--primary);
+      background: #fff;
+    }
+
+    .edit-bio-btn {
+      margin-top: 1.2rem;
+      padding: 0.8rem 1.5rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+      width: fit-content;
+    }
+
+    .edit-bio-btn:hover {
+      background-color: var(--hover);
+    }
+
+
+    @media (max-width: 768px) {
+      .main {
+        padding: 1.5rem;
+      }
+
+      .profile-section {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Main Content -->
+  <div class="main" id="main">
+    <div class="profile-section">
+      <h2>User Profile</h2>
+      <div class="profile-info">
+        <label for="username">Username:</label>
+        <input type="text" id="username" value="John Doe" />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="john.doe@example.com" />
+
+        <label for="usertype">User Type:</label>
+        <input type="text" id="usertype" value="Regular Attendee" />
+
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" value="+91 1234567890" />
+
+
+        <button id="editBtn" onclick="toggleEdit()">Edit</button>
+        <button id="saveBtn" style="display:none;" onclick="saveChanges()">Save</button>      </div>
+    </div>
+  </div>
+
+
+  <script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('main').classList.toggle('active');
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    console.log("Autofilling profile with:", user);
+    document.getElementById("username").value = user.name || "";
+    document.getElementById("email").value = user.email || "";
+    document.getElementById("phone").value = user.number || "";
+    document.getElementById("usertype").value = user.userType || "Regular Attendee"; 
+  }
+  </script>
+
+</body>
+
+</html>
+ 

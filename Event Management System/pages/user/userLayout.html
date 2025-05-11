@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EventEase User</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --primary: #4b7bec;
+      --text: #333;
+      --white: #fff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+    }
+
+    .navbar {
+      background: var(--white);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .nav-icons i {
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .user-profile span {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+
+
+    .sidebar a {
+      display: block;
+      padding: 1rem 2rem;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .sidebar a:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .main-content {
+      padding: 2rem;
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+
+
+    footer {
+      margin-top: 2rem;
+      background-color: var(--bg);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      border-top: 1px solid #ddd;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 250px;
+      background-color: var(--white);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      padding-top: 4rem;
+      z-index: 999;
+      transition: none;
+    }
+
+    .main-content {
+      padding: 2rem;
+      margin-left: 250px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">EventVerse</div>
+    <div class="nav-icons">
+      <div class="user-profile"><span id="usernameDisplay">User</span></div>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <a onclick="loadPage('dashboard.html')">Dashboard</a>
+    <a onclick="loadPage('searchEvent.html')">Browse Events</a>
+    <a onclick="loadPage('profile.html')">Profile</a>
+    <a href="javascript:void(0);" onclick="logout()">Logout</a>
+  </div>
+
+  <div class="main-content" id="content-area">
+    <h2>Loading...</h2>
+  </div>
+
+  <footer>
+    &copy; 2025 EventVerse. All rights reserved.
+  </footer>
+  <!-- <script src="/scripts/script.js" ></script> -->
+  <script>
+
+    function loadPage(page) {
+      fetch(page)
+        .then(res => res.text())
+        .then(data => {
+          const contentArea = document.getElementById('content-area');
+          contentArea.innerHTML = data;
+          const scripts = contentArea.querySelectorAll("script");
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = `(function(){ ${oldScript.textContent} })();`;
+            }
+            document.body.appendChild(newScript);
+            oldScript.remove();
+          });
+          if (page.includes('searchEvent.html')) {
+            setTimeout(() => {
+              if (typeof window.fetchEvents === 'function') {
+                window.fetchEvents();
+              } else {
+                console.warn("fetchEvents not available yet.");
+              }
+            }, 300);
+          }
+
+        })
+        .catch(err => {
+          document.getElementById('content-area').innerHTML = "<p>Error loading page.</p>";
+          console.error(err);
+        });
+    }
+
+    window.onload = () => {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) {
+        document.getElementById("usernameDisplay").innerText = `${userData.name} (User)`;
+      }
+      loadPage('dashboard.html');
+    };
+
+    //     window.onload = () => {
+
+    //   if (userData) {
+    //     document.getElementById("usernameDisplay").innerText = `${userData.sub} (User)`;
+    //   } else {
+    //     alert("User not found or session expired.");
+    //     window.location.href = "/pages/Form/loginForm.html";
+    //   }
+    //   loadPage('dashboard.html');
+    // };
+
+    // window.addEventListener("pageshow", function (event) {
+    //   const navType = window.performance.getEntriesByType("navigation")[0]?.type;
+    //   if (event.persisted || navType === "back_forward") {
+    //     localStorage.removeItem("organizerId");
+    //     localStorage.removeItem("organizerLoggedIn");
+    //     window.location.href = "/pages/Form/loginForm.html";
+    //   }
+    // });
+
+        window.addEventListener("pageshow", function (event) {
+      const navType = window.performance.getEntriesByType("navigation")[0]?.type;
+      if (event.persisted || navType === "back_forward") {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        window.location.href = "/pages/Form/loginForm.html";
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = '/pages/Form/LoginForm.html';
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Event - EventEase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --primary: #4b7bec;
+      --text: #333;
+      --white: #fff;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    } 
+    body {
+    background: #f0f4f8;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+    .manage-events {
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--primary);
+    }
+    .table-responsive {
+      overflow-x: auto;
+      background: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    table {
+      width: 100%;                                 
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    table thead {
+      background-color: var(--primary);
+      color: white;
+    }
+    table th, table td {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    table tbody tr:nth-child(even) {
+      background-color: #f5f7fa;
+    }
+    table tbody tr:hover {
+      background-color: #e8f0ff;
+    }
+    .manage-events {
+    font-family: Arial, sans-serif;
+    max-width: 80rem;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    background-color: #f9f9f9;
+  }
+
+  .manage-events h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .event-search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  #eventDropdown {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 220px;
+  }
+
+  .search-button {
+    padding: 10px 16px;
+    font-size: 16px;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .search-button:hover {
+    background-color: #0056b3;
+  }
+
+  #registrationTable table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  #registrationTable th,
+  #registrationTable td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  #registrationTable th {
+    background-color: #f0f0f0;
+  }
+  .btn-gap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .manage-events {
+    max-width: 100rem;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .manage-events h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #333;
+  }
+
+  .event-search {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  #eventDropdown {
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-width: 220px;
+    background-color: #fafafa;
+    transition: border-color 0.3s ease;
+  }
+
+  #eventDropdown:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  .search-button {
+    padding: 10px 18px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .search-button:hover {
+    background-color: #0056b3;
+  }
+
+  #registrationTable {
+    margin-top: 30px;
+  }
+
+  #registrationTable table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  #registrationTable th,
+  #registrationTable td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  #registrationTable th {
+    background-color: #007bff;
+    color: white;
+    font-weight: 500;
+  }
+
+  #registrationTable tr:nth-child(even) {
+    background-color: #f9f9f9;  
+  }
+
+  #registrationTable tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  #registrationTable p {
+    text-align: center;
+    color: #555;
+    font-size: 18px;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="manage-events">
+    <h2>Manage Events</h2>
+    <div class="event-search">
+      <label for="eventDropdown">Select Your Event:</label>
+      <select id="eventDropdown">
+        <option value="">-- Select Event --</option>
+      </select>
+      <button class="search-button" onclick="showRegistrations()">Search</button>
+    </div>
+    
+        <!-- Add container for event list -->
+        <div id="manageEventsBody"></div>
+    
+    <div id="registrationTable" style="margin-top: 20px;">
+    </div>
+    
+  </div>
+  
+
+
+<script>
+      console.log("DOM fully loaded");
+  (async function () {
+    // const manageEventsBody = document.getElementById("manageEventsBody");
+    const eventDropdown = document.getElementById("eventDropdown");
+    const registrationTable = document.getElementById("registrationTable");
+  
+//     function loadManageEvents() {
+//   fetch("http://localhost:8080/api/events")
+//     .then(response => response.json())
+//     .then(events => {
+//       const organizerId = localStorage.getItem("organizerId");
+//       console.log("Organizer ID:", organizerId); // Debugging line
+//       console.log("Events:", events); // Debugging line
+//       const userEvents = events.filter(event => event.organizerId === organizerId);
+
+//       // Populate the dropdown
+//       userEvents.forEach(event => {
+//         const option = document.createElement("option");
+//         option.value = event.id;
+//         option.textContent = `${event.name} (${event.date})`;
+//         eventDropdown.appendChild(option);
+//       });
+
+//       manageEventsBody.innerHTML = "";
+//       userEvents.forEach(event => {
+//         const row = document.createElement("tr");
+//         row.innerHTML = `
+//           <td>${event.id}</td>
+//           <td>${event.name}</td>
+//           <td>${event.date}</td>
+//           <td>${event.time}</td>
+//           <td>${event.location}</td>
+//           <td>${event.category}</td>
+//         `;
+//         manageEventsBody.appendChild(row);
+//       });
+//     })
+//     .catch(error => {
+//       console.error("Error fetching events:", error);
+//     });
+// }
+
+
+function loadManageEvents() {
+      fetch("http://localhost:8080/api/events")
+        .then(response => response.json())
+        .then(events => {
+          const organizerId = parseInt(localStorage.getItem("organizerId"));
+          console.log("Organizer ID:", organizerId); // Debugging line
+          console.log("Events:", events); // Debugging line
+          const userEvents = events.filter(event => event.organizerId === organizerId);
+
+          // Populate the dropdown
+          userEvents.forEach(event => {
+            const option = document.createElement("option");
+            option.value = event.id;
+            option.textContent = `${event.name} (${event.date})`;
+            eventDropdown.appendChild(option);
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching events:", error);
+        });
+    }
+
+    
+    
+    window.showRegistrations = async function () {
+      const selectedEventId = eventDropdown.value;
+  
+      if (!selectedEventId) {
+        alert("Please select an event.");
+        return;
+      }
+  
+      const registrationsRes = await fetch("http://localhost:8080/api/registrations");
+      const allRegistrations = await registrationsRes.json();
+      console.log("All Registrations:", allRegistrations);
+  
+      const filtered = allRegistrations.filter(reg => parseInt(reg.eventId) === parseInt(selectedEventId));      console.log("Filtered Registrations:", filtered); // Debugging line
+      if (filtered.length === 0) {
+        registrationTable.innerHTML = "<p>No registrations found for this event.</p>";
+        return;
+      }
+  
+      let html = `
+        <table border="1">
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>User Email</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+  
+      filtered.forEach(user => {
+        html += `<tr><td>${user.name}</td><td>${user.email}</td></tr>`;
+      });
+  
+      html += `</tbody></table>`;
+      registrationTable.innerHTML = html;
+    }
+  
+    loadManageEvents();
+  })();
+  </script>
+  </body>
+</html>

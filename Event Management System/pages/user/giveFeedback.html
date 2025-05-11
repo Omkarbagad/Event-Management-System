@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EventVerse - Give Feedback</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="/Event Management System/styles/style.css" />
+  <style>
+    :root {
+      --primary: #007bff;
+      --bg: #f0f2f5;
+      --text: #333;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--bg);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .nav-icons i {
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-profile span {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .sidebar {
+      position: fixed;
+      left: -250px;
+      top: 0;
+      height: 100vh;
+      width: 250px;
+      background-color: var(--bg);
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease-in-out;
+      z-index: 999;
+      padding-top: 4rem;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 1rem 2rem;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .main {
+      margin-left: 0;
+      padding: 2rem;
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    .sidebar.active~.main {
+      margin-left: 250px;
+    }
+
+    .main h2 {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .feedback-form {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .feedback-form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .feedback-form input,
+    .feedback-form textarea,
+    .feedback-form select {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .feedback-form button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .feedback-form button:hover {
+      background-color: #0056b3;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      background-color: var(--bg);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">EventVerse</div>
+    <div class="nav-icons">
+      <i class="fas fa-search"></i>
+      <i class="fas fa-bell"></i>
+      <div class="user-profile">
+        <span>Omkar</span>
+      </div>
+      <i class="fas fa-bars" onclick="toggleSidebar()"></i>
+    </div>
+  </div>
+
+
+  <!-- Main Content -->
+  <div class="main" id="main">
+    <h2>Give Feedback</h2>
+
+    <div class="feedback-form">
+      <form id="feedbackForm">
+        <label for="eventName">Event Name</label>
+        <input type="text" id="eventName" name="eventName" placeholder="Enter event name" required>
+
+        <label for="rating">Rating</label>
+        <select id="rating" name="rating" required>
+          <option value="">Select rating</option>
+          <option value="5">5⭐ - Excellent</option>
+          <option value="4">4⭐ - Very Good</option>
+          <option value="3">3⭐ - Good</option>
+          <option value="2">2⭐ - Fair</option>
+          <option value="1">1⭐ - Poor</option>
+        </select>
+
+        <label for="feedback">Feedback</label>
+        <textarea id="feedback" name="feedback" rows="5" placeholder="Write your feedback here..." required></textarea>
+
+        <button type="submit">Submit Feedback</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    &copy; 2025 EventVerse. All rights reserved.
+  </footer>
+
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventName = urlParams.get('event');
+    if (eventName) {
+      document.getElementById('eventName').value = eventName;
+    }
+  
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      console.log("User ID:", user.id);
+      console.log("Name:", user.name);
+      console.log("Email:", user.email);
+    }
+  
+    document.getElementById('feedbackForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+  
+      const eventName = document.getElementById('eventName').value;
+      const rating = document.getElementById('rating').value;
+      const feedbackText = document.getElementById('feedback').value;
+  
+      const user = JSON.parse(localStorage.getItem('user'));
+      const userid = user?.id;
+      const username = user?.name;
+      const email = user?.email;
+  
+      const feedbackData = {
+        userid,
+        username,
+        email,
+        event: eventName,
+        rating,
+        feedback: feedbackText,
+        organizerId: event.organizerId
+      };
+  
+      try {
+        const response = await fetch('http://localhost:8080/api/feedbacks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(feedbackData)
+        });
+  
+        if (response.ok) {
+          console.log("Redirecting to userLayout...");
+
+          window.location.href = "/pages/user/userLayout.html";
+        } else {
+          alert("Failed to submit feedback. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error submitting feedback:", error);
+        alert("An error occurred. Please try again.");
+      }
+    });
+  </script>
+  
+</body>
+
+</html>

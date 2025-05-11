@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EventEase Organizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --primary: #4b7bec;
+            --text: #333;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+        }
+
+        .navbar {
+            position: fixed;
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .nav-icons i {
+            font-size: 1.2rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .user-profile span {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: var(--white);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: 0.3s ease;
+            padding-top: 4rem;
+            z-index: 999;
+        }
+
+
+        .sidebar a {
+            display: block;
+            padding: 1rem 2rem;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .main-content {
+            padding: 2rem;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
+
+        footer {
+            margin-top: 2rem;
+            background-color: var(--bg);
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="logo">EventVerse</div>
+        <div class="nav-icons">
+            <i class="fas fa-bell"></i>
+            <div class="user-profile"><span>Loading...</span></div>
+        </div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <a onclick="loadPage('dashboard.html')">Dashboard</a>
+        <a onclick="loadPage('createEvent.html')">Create Event</a>
+        <a onclick="loadPage('manageEvent.html')">Manage Events</a>
+        <a onclick="loadPage('viewFeedback.html')">View Feedback</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="main-content" id="content-area">
+        <h2>Loading...</h2>
+    </div>
+
+    <footer>
+        &copy; 2025 EventVerse. All rights reserved.
+    </footer>
+    <script src="/scripts/script.js"></script>
+
+    <script>
+        function loadPage(page) {
+            fetch(page)
+                .then(res => res.text())
+                .then(data => {
+                    const contentArea = document.getElementById('content-area');
+                    contentArea.innerHTML = data;
+                    const scripts = contentArea.querySelectorAll("script");
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement("script");
+                        if (oldScript.src) {
+                            newScript.src = oldScript.src;
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        document.body.appendChild(newScript);
+                        oldScript.remove();
+                    });
+                })
+                .catch(err => {
+                    document.getElementById('content-area').innerHTML = "<p>Error loading page.</p>";
+                    console.error(err);
+                });
+        }
+
+function getUserName() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user ? user.name : null;
+}
+
+function getUserType() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user ? user.usertype : null;
+}
+        const organizerId = localStorage.getItem("organizerId");
+        const isLoggedIn = localStorage.getItem("organizerLoggedIn") === "true";
+        console.log("Organizer ID:", organizerId);
+        console.log("Is Logged In:", isLoggedIn);
+
+        if (!organizerId || !isLoggedIn) {
+            alert("Access denied. Please login again.");
+            window.location.href = "/pages/Form/LoginForm.html";
+        }
+
+        try {
+            const userName = getUserName();
+            const userType = getUserType();
+            if (userType !== "organizer") {
+                alert("Access denied. Not an organizer.");
+                window.location.href = "/pages/Form/LoginForm.html";
+            } else {
+                document.querySelector(".user-profile span").textContent = `${userName} (Org)`;
+            }
+        } catch (e) {
+            console.error("Invalid token or user info:", e);
+            logout();
+        }
+
+
+        window.addEventListener("pageshow", function (event) {
+            const navType = window.performance.getEntriesByType("navigation")[0]?.type;
+            if (event.persisted || navType === "back_forward") {
+                localStorage.removeItem("organizerId");
+                localStorage.removeItem("organizerLoggedIn");
+                window.location.href = "/pages/Form/LoginForm.html";
+            }
+        });
+
+
+        window.onload = () => loadPage('dashboard.html');
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "/pages/Form/LoginForm.html";
+        }
+
+    </script>
+</body>
+
+</html>

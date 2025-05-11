@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EventEase - Welcome</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --accent: #ff6584;
+      --bg: #f0f0ff;
+      --text: #333;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+    }
+
+    .container {
+      background-color: white;
+      width: 90%;
+      max-width: 500px;
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.9rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn.login {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn.signup {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .signup-form {
+      display: none;
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .signup-form.active {
+      display: block;
+    }
+
+    .signup-form label {
+      display: block;
+      margin: 0.5rem 0 0.3rem;
+      font-weight: 600;
+    }
+
+    .signup-form input, .signup-form select {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .signup-form button {
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .signup-form button:hover {
+      background-color: #5848e5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to EventEase</h1>
+    <p>Choose an option to continue</p>
+
+    <div class="btn-group">
+      <button class="btn login" onclick="redirectToLogin()">Log In</button>
+      <button class="btn signup" onclick="toggleSignup()">Sign Up</button>
+    </div>
+
+    <!-- Sign Up Form -->
+    <div class="signup-form" id="signupForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Enter your name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+
+      <label for="role">Sign up as</label>
+      <select id="role">
+        <option value="">-- Select --</option>
+        <option value="user">User</option>
+        <option value="organizer">Organizer</option>
+      </select>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Create a password" required>
+
+      <button onclick="handleSignup()">Continue</button>
+    </div>
+  </div>
+<a href="/Event Management System/pages/Form/LoginForm.html"></a>
+  <script>
+    function toggleSignup() {
+      const form = document.getElementById('signupForm');
+      form.classList.toggle('active');
+    }
+
+    function redirectToLogin() {
+      // Redirect to your login page
+      window.location.href = "/Event Management System/pages/Form/loginForm.html";
+    }
+
+    function handleSignup() {
+      const role = document.getElementById('role').value;
+
+      if (role === "user") {
+        window.location.href = "/Event Management System/pages/user/home.html";
+      } else if (role === "organizer") {
+        window.location.href = "/Event Management System/pages/organizer/home.html";
+      } else {
+        alert("Please select a role.");
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<style>
+  .feedback-section {
+    margin: 20px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .feedback-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .feedback-table thead {
+    background-color: #4CAF50; /* Header background color */
+    color: #fff;
+  }
+
+  .feedback-table th,
+  .feedback-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  .feedback-table tbody tr {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .feedback-table tbody tr:nth-of-type(even) {
+    background-color: #f9f9f9;
+  }
+
+  .feedback-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .action-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+  }
+
+  .action-btn:hover {
+    background-color: #c0392b;
+  }
+</style>
+
+<div class="feedback-section">
+  <h2>View Feedback</h2>
+  <table class="feedback-table">
+    <thead>
+      <tr>
+        <th>Event Name</th>
+        <th>Username</th>
+        <th>Rating</th>
+        <th>Comment</th>
+      </tr>
+    </thead>
+    <tbody id="feedback-table-body">
+      <!-- Feedback data gets inserted here -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  (function () {
+  const organizerId = localStorage.getItem("organizerId");
+
+  function loadFeedbackData() {
+    Promise.all([
+      fetch("http://localhost:8080/api/feedbacks"),
+      fetch("http://localhost:8080/api/events")
+    ])
+    .then(([feedbackRes, eventsRes]) => Promise.all([feedbackRes.json(), eventsRes.json()]))
+    .then(([feedbackData, eventsData]) => {
+      const organizerEvents = eventsData
+        .filter(event => event.organizerId === parseInt(organizerId))
+        .map(event => event.name);
+
+      const relevantFeedback = feedbackData.filter(fb =>
+        organizerEvents.includes(fb.event)
+      );
+
+      let avgRating = 0;
+      if (relevantFeedback.length > 0) {
+        const total = relevantFeedback.reduce((sum, fb) => sum + parseFloat(fb.rating), 0);
+        avgRating = total / relevantFeedback.length;
+      }
+      localStorage.setItem("avgFeedbackRating", avgRating.toFixed(2));
+
+      console.log("Average Feedback Rating:", avgRating.toFixed(2)); // For debugging
+
+      const rows = relevantFeedback.map(fb => `
+          <tr>
+              <td>${fb.event}</td>
+              <td>${fb.username}</td>
+              <td>${fb.rating}</td>
+              <td>${fb.feedback}</td>
+          </tr>
+      `).join("");
+
+      document.getElementById("feedback-table-body").innerHTML = rows || `
+          <tr><td colspan="5">No feedback found for your events.</td></tr>
+      `;
+    })
+    .catch(error => {
+      console.error("Error loading feedback:", error);
+      document.getElementById("feedback-table-body").innerHTML = `
+          <tr><td colspan="5">Error loading feedback.</td></tr>
+      `;
+    });
+  }
+
+  function deleteFeedback(id) {
+    alert(`Delete feedback with ID: ${id}`);
+  }
+
+  loadFeedbackData();
+})();
+
+
+
+</script>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EventEase - Organizer Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --primary: #4b7bec;
+      --text: #333;
+      --white: #fff;
+    }
+
+    .welcome-box {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .welcome-box h3 {
+      color: var(--text);
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-box p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .card p {
+      font-size: 1rem;
+      color: #555;
+    }
+
+    .charts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+
+    .chart-box {
+      flex: 1 1 50%;
+      min-width: 0;
+      flex: 1 1 300px;
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .top-events {
+      margin-top: 2rem;
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .top-events h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .event-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .event {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .event h4 {
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .event p {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .top-events-section {
+      margin-top: 30px;
+      padding: 35px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .top-events-section h3 {
+      color: #333;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+    }
+
+    .top-events-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .top-event-card {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .top-event-card .rank {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffc107;
+      /* Gold color for ranking */
+    }
+
+    .top-event-card .event-info {
+      flex-grow: 1;
+      margin-left: 30px;
+      /* Space for the rank */
+    }
+
+    .top-event-card h4 {
+      color: #333;
+      margin-top: 0;
+      margin-bottom: 5px;
+      font-size: 1.1em;
+    }
+
+    .top-event-card .rating {
+      color: #555;
+      font-size: 0.9em;
+      margin-bottom: 0;
+    }
+
+    .top-event-card .icon {
+      font-size: 2em;
+      color: #ffc107;
+      margin-left: 15px;
+    }
+
+    #no-top-events-message {
+      color: #777;
+      font-style: italic;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main" id="main">
+    <div class="welcome-box">
+      <h3>Welcome back Organizer</h3>
+      <p>
+        Stay on top of your events, manage your audience, and keep improving
+        with valuable feedback!
+      </p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3 id="total-events"></h3>
+        <p>Total Events</p>
+      </div>
+
+      <div class="card">
+        <h3 id="total-registrations"></h3>
+        <p>Total Registrations</p>
+      </div>
+      <div class="card">
+        <h3 id="avg-feedback"></h3>
+        <p>Avg Feedback</p>
+      </div>
+    </div>
+
+    <div class="charts">
+      <div class="chart-box">
+        <h3>Registrations per Category</h3>
+        <canvas id="categoryPieChart" width="400" height="400"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Event Registrations</h3>
+        <canvas id="registrationsBarChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+
+    <div class="top-events-section">
+      <h3>🏆 Top Performing Events (by Avg. Rating)</h3>
+      <div id="top-rated-events" class="top-events-list">
+      </div>
+      <p id="no-top-events-message" style="display: none">
+        No feedback received for any events yet.
+      </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      (function () {
+        window.getAuthHeaders = function() {
+  const token = localStorage.getItem("token");
+  return token ? { "Authorization": "Bearer " + token } : {};
+};
+        const organizerCode = parseInt(localStorage.getItem("organizerId"));
+        const eventUrl = "http://localhost:8080/api/events";
+        const registrationUrl = "http://localhost:8080/api/registrations";
+        const feedbackUrl = "http://localhost:8080/api/feedbacks";
+
+        const totalEventsElement = document.getElementById("total-events");
+        const totalRegistrationsElement = document.getElementById(
+          "total-registrations"
+        );
+        const avgFeedbackElement = document.getElementById("avg-feedback");
+        const topRatedEventsContainer = document.getElementById(
+          "top-rated-events"
+        );
+        const registrationsBarChartCtx = document
+          .getElementById("registrationsBarChart")
+          .getContext("2d");
+
+        window.categoryPieChart = null;
+        window.registrationsBarChart = null;
+
+        function fetchOrganizerData() {
+          Promise.all([
+  fetch(eventUrl, { headers: window.getAuthHeaders() }),
+  fetch(registrationUrl, { headers: window.getAuthHeaders() }),
+  fetch(feedbackUrl, { headers: window.getAuthHeaders() }),
+])
+            .then(([eventsResponse, registrationsResponse, feedbackResponse]) =>
+              Promise.all([
+                eventsResponse.json(),
+                registrationsResponse.json(),
+                feedbackResponse.json(),
+              ])
+            )
+            .then(([allEvents, allRegistrations, allFeedback]) => {
+              const organizerEvents = allEvents.filter(
+                (event) => event.organizerId === organizerCode
+              );
+              const organizerEventIds = organizerEvents.map((event) =>
+                String(event.id)
+              );
+
+              const organizerRegistrations = allRegistrations.filter((reg) =>
+                organizerEvents.some((event) =>
+                  Number(event.id) === Number(reg.eventId)
+                )
+              );
+
+              const organizerEventNames = organizerEvents.map(
+                (event) => event.name
+              );
+
+              const organizerFeedback = allFeedback.filter((feedback) =>
+                organizerEventNames.includes(feedback.event)
+              );
+
+              displayDashboardData(
+                organizerEvents,
+                organizerRegistrations,
+                organizerFeedback
+              );
+              findTopRatedEvents(organizerEvents, organizerFeedback);
+              updateCategoryPieChart(
+                organizerEvents,
+                organizerRegistrations
+              );
+              updateRegistrationsBarChart(
+                organizerEvents,
+                organizerRegistrations
+              );
+            })
+            .catch((error) => {
+              console.error("Error fetching organizer data:", error);
+              totalEventsElement.textContent = "Error";
+              totalRegistrationsElement.textContent = "Error";
+              avgFeedbackElement.textContent = "Error";
+              topRatedEventsContainer.textContent =
+                "Error loading top rated events.";
+            });
+        }
+
+        function displayDashboardData(events, allRegistrations, feedback) {
+          console.log("Events:", events.length);
+          totalEventsElement.textContent = events.length;
+
+          const totalRegistrations = events.reduce((sum, event) => {
+            const count = allRegistrations.filter((reg) =>
+              Number(reg.eventId) === Number(event.id)
+            ).length;
+            return sum + count;
+          }, 0);
+
+          totalRegistrationsElement.textContent = totalRegistrations;
+
+          if (feedback.length > 0) {
+            const totalRating = feedback.reduce(
+              (sum, fb) => sum + parseFloat(fb.rating),
+              0
+            );
+            const averageRating = (totalRating / feedback.length).toFixed(1);
+            avgFeedbackElement.textContent = averageRating + " ★";
+          } else {
+            avgFeedbackElement.textContent = "N/A";
+          }
+        }
+
+        function findTopRatedEvents(events, feedback) {
+          const eventRatings = {};
+
+          events.forEach((event) => {
+            const eventFeedback = feedback.filter((fb) => fb.event === event.name);
+            if (eventFeedback.length > 0) {
+              const totalRating = eventFeedback.reduce(
+                (sum, fb) => sum + parseFloat(fb.rating),
+                0
+              );
+              eventRatings[event.name] =
+                totalRating / eventFeedback.length;
+            } else {
+              eventRatings[event.name] = 0;
+            }
+          });
+
+          const sortedEvents = Object.entries(eventRatings)
+            .sort(([, avgA], [, avgB]) => avgB - avgA)
+            .slice(0, 3);
+
+          topRatedEventsContainer.innerHTML = "";
+          if (sortedEvents.length > 0) {
+            const ul = document.createElement("ul");
+            sortedEvents.forEach(([eventName, avgRating]) => {
+              const li = document.createElement("li");
+              li.textContent = `${eventName} (Avg Rating: ${avgRating.toFixed(
+                1
+              )} ★)`;
+              ul.appendChild(li);
+            });
+            topRatedEventsContainer.appendChild(ul);
+          } else {
+            topRatedEventsContainer.textContent =
+              "No feedback received for any events yet.";
+          }
+        }
+
+        function updateCategoryPieChart(organizerEvents, organizerRegistrations) {
+          const categoryCounts = {
+            conference: 0,
+            workshop: 0,
+            concert: 0,
+            sports: 0,
+            music: 0,
+          };
+
+          organizerEvents.forEach((event) => {
+            const count = organizerRegistrations.filter((reg) =>
+              String(reg.eventId) === String(event.id)
+            ).length;
+            if (categoryCounts[event.category]) {
+              categoryCounts[event.category] += count;
+            } else {
+              categoryCounts[event.category] = count;
+            }
+          });
+
+          const labels = Object.keys(categoryCounts);
+          const data = Object.values(categoryCounts);
+
+          const backgroundColors = [
+            "#FF6384",
+            "#36A2EB",
+            "#FFCE56",
+            "#4BC0C0",
+            "#9966FF",
+            "#FF9F40",
+          ];
+
+          const ctx = document.getElementById("categoryPieChart").getContext("2d");
+
+          if (window.categoryPieChart) {
+            window.categoryPieChart.destroy();
+          }
+
+          window.categoryPieChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+              labels: labels,
+              datasets: [{
+                data: data,
+                backgroundColor: backgroundColors.slice(0, labels.length),
+              }, ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: "Registrations per Category",
+                },
+              },
+            },
+          });
+        }
+        function updateRegistrationsBarChart(organizerEvents, organizerRegistrations) {
+          const eventRegistrations = {};
+          organizerEvents.forEach(event => {
+            eventRegistrations[event.name] = organizerRegistrations.filter(reg => reg.eventId === event.id).length;
+          });
+
+          const eventNames = Object.keys(eventRegistrations);
+          const registrationCounts = Object.values(eventRegistrations);
+
+          if (window.registrationsBarChart) {
+            window.registrationsBarChart.destroy();
+          }
+
+          window.registrationsBarChart = new Chart(registrationsBarChartCtx, {
+            type: 'bar',
+            data: {
+              labels: eventNames,
+              datasets: [{
+                label: 'Registrations',
+                data: registrationCounts,
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.6)',
+                  'rgba(54, 162, 235, 0.6)',
+                  'rgba(255, 206, 86, 0.6)',
+                  'rgba(75, 192, 192, 0.6)',
+                  'rgba(153, 102, 255, 0.6)',
+                ],
+                borderColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                ],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Total Registrations per Event',
+                  font: {
+                    size: 16
+                  }
+                },
+                legend: {
+                  position: 'bottom'
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  }
+                }
+              }
+            }
+          });
+        }
+
+
+        if (organizerCode) {
+          fetchOrganizerData();
+        } else {
+          console.warn("Organizer id not found in localStorage.");
+          topRatedEventsContainer.textContent = "Organizer ID not found.";
+        }
+      })();
+    </script>
+  </div>
+</body>
+</html>

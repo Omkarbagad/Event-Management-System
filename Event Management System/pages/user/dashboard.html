@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EventEase - Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Dashboard Header */
+    .dashboard-header {
+      background-color: #fff;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-header h2 {
+      color: #333;
+      font-size: 1.8rem;
+    }
+
+    /* Summary Cards */
+    .summary-cards {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 0 1rem 2rem;
+    }
+
+    .summary-cards .card {
+      flex: 1 1 200px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .summary-cards .card h3 {
+      margin: 0;
+      font-size: 2rem;
+      color: #007bff;
+    }
+
+    .summary-cards .card p {
+      margin: 0.5rem 0 0;
+      font-size: 1rem;
+      color: #666;
+    }
+
+    /* Table Layout */
+    .table-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 0 1rem;
+    }
+
+    .table-wrapper {
+      flex: 1 1 45%;
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+
+    .table-wrapper h3 {
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+
+    th,
+    td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    td {
+      background-color: #f9f9f9;
+    }
+
+    .action-btn {
+      background-color: #ff4d4d;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+
+    .action-btn:hover {
+      background-color: #ff1a1a;
+    }
+
+    button.cancel-btn {
+      background-color: #ff4d4d;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button.cancel-btn:hover {
+      background-color: #e60000;
+    }
+
+    button.feedback-btn {
+      background-color: #4caf50;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button.feedback-btn:hover {
+      background-color: #388e3c;
+    }
+
+    td button {
+      margin: 4px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dashboard-header">
+    <h2>User Dashboard</h2>
+  </div>
+
+  <!-- Summary Cards: Now only 3 cards (excluding Avg Feedback Rating) -->
+  <div class="summary-cards">
+    <div class="card">
+      <h3 id="total-registered">0</h3>
+      <p>Total Registered Events</p>
+    </div>
+    <div class="card">
+      <h3 id="upcoming-count">0</h3>
+      <p>Upcoming Events</p>
+    </div>
+    <div class="card">
+      <h3 id="completed-count">0</h3>
+      <p>Completed Events</p>
+    </div>
+  </div>
+
+  <!-- Tables -->
+  <div class="table-container">
+    <div class="table-wrapper">
+      <h3>Upcoming Events</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Event Name</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="upcoming-events">
+          <!-- Upcoming events rows -->
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrapper">
+      <h3>Completed Events</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Event Name</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="completed-events">
+          <!-- Completed events rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const eventsApiUrl = "http://localhost:8080/api/events";
+      const regsApiUrl = "http://localhost:8080/api/registrations";
+
+      const upcomingEventsBody = document.getElementById("upcoming-events");
+      const completedEventsBody = document.getElementById("completed-events");
+
+      const totalRegisteredElem = document.getElementById("total-registered");
+      const upcomingCountElem = document.getElementById("upcoming-count");
+      const completedCountElem = document.getElementById("completed-count");
+
+      const loggedInUser = JSON.parse(localStorage.getItem("user"));
+      if (!loggedInUser) {
+        window.location.href = "/pages/Form/LoginForm.html";
+      }
+      const loggedInUserId = loggedInUser.id;
+
+      function fetchAndRenderEvents() {
+        Promise.all([
+          fetch(eventsApiUrl),
+          fetch(regsApiUrl)
+        ])
+          .then(([eventsRes, regsRes]) => Promise.all([eventsRes.json(), regsRes.json()]))
+          .then(([events, registrations]) => {
+            const userRegistrations = registrations.filter(reg => String(reg.userId) === String(loggedInUserId));
+            totalRegisteredElem.textContent = userRegistrations.length;
+
+            // Map events the user is registered for.
+            const userEvents = userRegistrations.map(reg => {
+              const matchedEvent = events.find(evt => String(evt.id) === String(reg.eventId));
+              return matchedEvent ? { ...matchedEvent, registrationId: reg.id } : null;
+            }).filter(Boolean);
+
+            // Calculate upcoming and completed counts
+            let upcomingCount = 0;
+            let completedCount = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            userEvents.forEach(evt => {
+              const eventDate = new Date(evt.date);
+              eventDate.setHours(0, 0, 0, 0);
+              if (eventDate >= today) {
+                upcomingCount++;
+              } else {
+                completedCount++;
+              }
+            });
+            upcomingCountElem.textContent = upcomingCount;
+            completedCountElem.textContent = completedCount;
+
+            renderEvents(userEvents);
+          })
+          .catch(error => {
+            console.error("Error fetching events or registrations:", error);
+            upcomingEventsBody.innerHTML = "<tr><td colspan='4'>Error loading events.</td></tr>";
+            completedEventsBody.innerHTML = "<tr><td colspan='4'>Error loading events.</td></tr>";
+          });
+      }
+
+      function renderEvents(events) {
+        upcomingEventsBody.innerHTML = "";
+        completedEventsBody.innerHTML = "";
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        events.forEach(event => {
+          const eventDate = new Date(event.date);
+          eventDate.setHours(0, 0, 0, 0);
+
+          const row = document.createElement("tr");
+          const actionCell = document.createElement("td");
+
+          row.innerHTML = `
+            <td>${event.name}</td>
+            <td>${formatDate(event.date)}</td>
+            <td>${event.location}</td>
+          `;
+
+          if (eventDate >= today) {
+            const cancelButton = document.createElement("button");
+            cancelButton.textContent = "Cancel Registration";
+            cancelButton.classList.add("cancel-btn");
+            cancelButton.onclick = () => cancelRegistration(event.registrationId);
+            actionCell.appendChild(cancelButton);
+            row.appendChild(actionCell);
+            upcomingEventsBody.appendChild(row);
+          } else {
+            const feedbackButton = document.createElement("button");
+            feedbackButton.textContent = "Give Feedback";
+            feedbackButton.classList.add("feedback-btn");
+            feedbackButton.onclick = () => giveFeedback(event.registrationId, event.name);
+            actionCell.appendChild(feedbackButton);
+            row.appendChild(actionCell);
+            completedEventsBody.appendChild(row);
+          }
+        });
+
+        if (upcomingEventsBody.innerHTML.trim() === "") {
+          upcomingEventsBody.innerHTML = "<tr><td colspan='4'>No upcoming events.</td></tr>";
+        }
+        if (completedEventsBody.innerHTML.trim() === "") {
+          completedEventsBody.innerHTML = "<tr><td colspan='4'>No completed events.</td></tr>";
+        }
+      }
+
+      function formatDate(dateStr) {
+        const dateObj = new Date(dateStr);
+        const options = { day: "numeric", month: "long", year: "numeric" };
+        return dateObj.toLocaleDateString("en-US", options);
+      }
+
+      async function cancelRegistration(registrationId) {
+        if (confirm("Are you sure you want to cancel your registration for this event?")) {
+          try {
+            const response = await fetch(`${regsApiUrl}/${registrationId}`, {
+              method: "DELETE"
+            });
+            if (response.ok) {
+              alert("Registration cancelled successfully.");
+              fetchAndRenderEvents();
+            } else {
+              alert("Failed to cancel registration.");
+            }
+          } catch (error) {
+            console.error("Error cancelling registration:", error);
+            alert("An error occurred while cancelling registration.");
+          }
+        }
+      }
+
+      function giveFeedback(registrationId, eventName) {
+        const url = `/pages/user/giveFeedback.html?regId=${registrationId}&event=${encodeURIComponent(eventName)}`;
+        window.location.href = url;
+      }
+
+      fetchAndRenderEvents();
+    })();
+  </script>
+</body>
+
+</html>
